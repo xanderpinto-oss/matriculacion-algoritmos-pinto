@@ -1,0 +1,9 @@
+registros,algoritmo,corrida,tiempo_us_por_busqueda,validacion
+559,Búsqueda lineal,1,1.546178,SI
+559,Búsqueda binaria,1,0.176096,SI
+559,Búsqueda lineal,2,1.406591,SI
+559,Búsqueda binaria,2,0.106845,SI
+559,Búsqueda lineal,3,1.468261,SI
+559,Búsqueda binaria,3,0.106598,SI
+559,Búsqueda lineal,PROMEDIO,1.473677,SI
+559,Búsqueda binaria,PROMEDIO,0.129846,SI
