@@ -16,8 +16,12 @@ Elijo la **opción 2**: ordenar una sola vez con un algoritmo O(n log n) in situ
 
 ## ¿Desde cuántas consultas cambiaría de opinión?
 El punto de equilibrio aproximado entre recorrer y ordenar es:
+
 q · n = n log₂(n) + q log₂(n)
+
 q = [n log₂(n)] / [n − log₂(n)] ≈ **18 consultas**.
+
 Con menos de unas 18 consultas podría convenir el recorrido directo para evitar ordenar. Desde aproximadamente 18, ordenar y buscar binariamente resulta más conveniente. Para 8.000 consultas, la opción 2 gana ampliamente.
 
-La medición de P1.2 permite observar la diferencia experimental entre crecimiento cuadrático y n log n. Incorporaré los tiempos reales obtenidos en mi equipo al defender esta decisión.
+## Relación con la medición experimental
+En P1.2, con 64.000 elementos, la búsqueda por pares tardó 908,473 ms y la cura basada en ordenar y comparar tardó 2,593 ms; en esa prueba la cura fue aproximadamente 350 veces más rápida. Esta medición, aunque usa un tamaño menor y no permite predecir exactamente el tiempo para 250.000 elementos, respalda la elección de una estrategia de ordenación eficiente frente a una solución cuadrática.
