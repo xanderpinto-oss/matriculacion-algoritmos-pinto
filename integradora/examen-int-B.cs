@@ -304,6 +304,6 @@ public static class Programa
 
         MedirComparacion();
         MedirMilUtiles();
-        Console.WriteLine("\nFin de la evaluación integradora. Copia los promedios impresos en medicion.md.");
+      
     }
 }
