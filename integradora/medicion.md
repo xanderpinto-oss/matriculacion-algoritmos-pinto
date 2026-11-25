@@ -1,14 +1,14 @@
 Xander Boris Pinto Montes
 
-# Medición — Evaluación integradora, variante B
+# Mi medición — Evaluación integradora, variante B
 
-## Protocolo
+## Protocolo que utilicé
 
-Ejecuté el programa en mi computadora con la configuración `Release`, usando `dotnet run -c Release`. Para cada tamaño se hizo una corrida de calentamiento que no se incluyó en los resultados y después tres corridas medidas con `Stopwatch`. El promedio se calculó con esas tres corridas.
+Ejecuté el proyecto en mi computadora con la configuración Release, mediante el comando dotnet run -c Release. Para cada tamaño realicé primero una corrida de calentamiento, que no incluí en los resultados, y después tomé tres mediciones con Stopwatch. Finalmente, utilicé el promedio de esas tres corridas.
 
-Los útiles se generan con una semilla fija (`n + 1000`), de modo que las dos implementaciones trabajan con los mismos datos y el mismo presupuesto, que corresponde a un tercio del costo total. El programa calibró el tamaño máximo para que la solución ingenua quedara dentro del intervalo pedido de 0,5 a 20 segundos. La calibración dio `n = 24` en `0,700 s`; esa corrida no se incluyó en la tabla. Por eso medí cuatro tamaños consecutivos: 21, 22, 23 y 24 útiles.
+Generé los útiles con una semilla fija (n + 1000) para que ambas implementaciones recibieran los mismos datos. También mantuve el mismo presupuesto en cada comparación, calculado como un tercio del costo total. Antes de medir los cuatro tamaños, calibré la cantidad máxima para que el comprador ingenuo tardara entre 0,5 y 20 segundos. La calibración dio n = 24 en 0,700 s; no incluí ese tiempo en la tabla. A partir de ese resultado medí cuatro tamaños consecutivos: 21, 22, 23 y 24 útiles.
 
-## Resultados de las cuatro pruebas
+## Resultados que obtuve
 
 ### Comprador ingenuo
 
@@ -28,20 +28,20 @@ Los útiles se generan con una semilla fija (`n + 1000`), de modo que las dos im
 | 23 | 228 | 0,041 | 0,037 | 0,047 | 0,042 | 1,33x |
 | 24 | 214 | 0,033 | 0,035 | 0,033 | 0,034 | 0,81x |
 
-En las cuatro filas el programa confirmó que las dos soluciones obtuvieron la misma utilidad máxima:
+Al comparar los resultados, comprobé que las dos implementaciones obtuvieron la misma utilidad máxima en los cuatro tamaños:
 
-| Útiles (n) | Utilidad ingenua | Utilidad mejorada | Útiles elegidos por cada solución | Resultado |
+| Útiles (n) | Utilidad ingenua | Utilidad mejorada | Útiles elegidos por cada solución | Mi comprobación |
 |---:|---:|---:|---:|---|
 | 21 | 612 | 612 | 10 | Coinciden |
 | 22 | 634 | 634 | 9 | Coinciden |
 | 23 | 875 | 875 | 12 | Coinciden |
 | 24 | 705 | 705 | 11 | Coinciden |
 
-Además, las pruebas iniciales dieron **8 de 8 correctas** para `CompradorIngenuo` y **8 de 8 correctas** para `CompradorMejorado`. En cada comprador se revisaron los seis casos del enunciado y dos consultas de `EstaEnLaCompra`.
+También ejecuté los casos iniciales del enunciado. Obtuve **8 de 8 pruebas correctas** con CompradorIngenuo y **8 de 8 pruebas correctas** con CompradorMejorado. En cada implementación comprobé los seis casos y las dos consultas adicionales de EstaEnLaCompra.
 
-## Solución mejorada con 1.000 útiles y presupuesto de 10.000 Bs
+## Mi prueba con 1.000 útiles y presupuesto de 10.000 Bs
 
-También ejecuté la solución mejorada con 1.000 útiles y un presupuesto de 10.000 Bs. Los datos se generaron con la misma semilla fija del programa.
+Después ejecuté la solución mejorada con 1.000 útiles y un presupuesto de 10.000 Bs. Para esta prueba también realicé un calentamiento y tres corridas medidas. Estos fueron los tiempos que obtuve:
 
 | Corrida | Tiempo (ms) |
 |---:|---:|
@@ -50,8 +50,10 @@ También ejecuté la solución mejorada con 1.000 útiles y un presupuesto de 10
 | 3 | 15,698 |
 | **Promedio** | **14,630** |
 
-La utilidad máxima obtenida fue **35.071 puntos** y se eligieron **518 útiles**.
+Con esos datos, mi solución alcanzó una utilidad máxima de **35.071 puntos** y seleccionó **518 útiles**.
 
-## Conclusión
+## Mi conclusión
 
-En mis pruebas, el comprador mejorado obtuvo la misma utilidad que el ingenuo en los cuatro tamaños y también pasó sus ocho verificaciones. El ingenuo tardó aproximadamente el doble cada vez que agregué un útil: sus cocientes fueron 2,04x, 2,04x y 2,04x, lo que concuerda con el crecimiento exponencial de revisar todos los subconjuntos. El mejorado fue mucho más rápido, pero sus cocientes (0,68x, 1,33x y 0,81x) no crecen de forma regular; como sus tiempos son muy pequeños, una diferencia de unas pocas centésimas de milisegundo produce bastante variación. También puede influir el calentamiento del entorno, el sistema operativo y la precisión de la medición, así que no tomo esos cocientes como una regla exacta. Finalmente, con 1.000 útiles y presupuesto de 10.000 Bs el mejorado obtuvo 35.071 puntos en un promedio de 14,630 ms.
+En mis pruebas, el comprador mejorado consiguió la misma utilidad que el ingenuo en los cuatro tamaños y pasó sus ocho verificaciones iniciales. Observé que el ingenuo tardó aproximadamente el doble cada vez que agregué un útil: sus cocientes fueron 2,04x, 2,04x y 2,04x. Este comportamiento coincide con el crecimiento exponencial que espero al revisar todos los subconjuntos.
+
+Mi solución mejorada fue mucho más rápida. Sin embargo, sus cocientes (0,68x, 1,33x y 0,81x) no siguen un crecimiento regular. Esto puede pasar porque sus tiempos son muy pequeños: una diferencia de unas pocas centésimas de milisegundo cambia bastante el cociente. También pueden influir el calentamiento del entorno, otros procesos del sistema operativo y la precisión del reloj. Por eso tomo estos resultados como mediciones de mi computadora y no como una regla exacta. En la prueba más grande, con 1.000 útiles y presupuesto de 10.000 Bs, obtuve 35.071 puntos con un promedio de 14,630 ms.
