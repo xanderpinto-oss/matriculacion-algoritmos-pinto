@@ -1,34 +1,34 @@
 Xander Boris Pinto Montes
 
-# Análisis — Evaluación integradora, variante B
+# Mi análisis — Evaluación integradora, variante B
 
-## 1. Identificación del problema
+## 1. Cómo entendí el problema
 
-El caso de las compras de una escuela es el problema clásico de la **mochila 0/1**. Cada útil tiene un costo en bolivianos y una utilidad. Para cada útil solo hay dos alternativas: comprarlo completo o no comprarlo. Se busca maximizar la suma de utilidades sin superar el presupuesto.
+Al revisar el caso de las compras de la escuela, identifiqué que se trata del problema clásico de la **mochila 0/1**. Cada útil tiene un costo en bolivianos y un puntaje de utilidad. Para cada artículo solo puedo tomar una decisión: comprarlo completo o dejarlo fuera. Mi objetivo es elegir una combinación que me dé la mayor utilidad posible sin superar el presupuesto.
 
-La entrada contiene n útiles, con \`CostoBs\` y \`Utilidad\`, y un presupuesto B. La salida debe contener la utilidad máxima y los códigos de los útiles que forman esa solución. No se puede fraccionar un artículo ni comprarlo más de una vez.
+Como entrada recibo los n útiles, cada uno con sus campos CostoBs y Utilidad, además del presupuesto B. Como resultado debo devolver la utilidad máxima y los códigos de los útiles que seleccioné. También debo respetar que no puedo fraccionar un útil ni comprarlo más de una vez.
 
-## 2. Costo de la solución ingenua
+## 2. Análisis del costo de la solución ingenua
 
-\`CompradorIngenuo\` recorre las \`2^n\` máscaras, una por cada subconjunto posible. Para cada máscara vuelve a recorrer los n útiles para sumar costo y utilidad. Por eso realiza un trabajo proporcional a:
+Al revisar CompradorIngenuo, observé que recorre las 2^n máscaras posibles, es decir, todos los subconjuntos que se pueden formar con los útiles. Para cada máscara vuelve a recorrer los n artículos y suma sus costos y utilidades. Por eso, el trabajo total es proporcional a:
 
 \[
 T(n)=n\,2^n=\Theta(n2^n)
 \]
 
-La cantidad de subconjuntos se duplica al agregar un útil y, además, cada subconjunto se revisa recorriendo la lista. Una forma de escribir la recurrencia del trabajo es:
+La cantidad de subconjuntos se duplica cuando agrego un útil. Además, dentro de cada subconjunto se revisa la lista de artículos. Para expresar este crecimiento mediante una recurrencia, la planteo así:
 
 \[
 T(n)=2T(n-1)+\Theta(2^n),\qquad T(0)=\Theta(1)
 \]
 
-Al desarrollar la recurrencia se obtiene \(T(n)=\Theta(n2^n)\). **No corresponde aplicar directamente el teorema maestro**: este se formula para recurrencias con subproblemas de tamaño reducido por un factor, como \(T(n)=aT(n/b)+f(n)\). Aquí el tamaño baja restando uno, no dividiéndose entre una constante mayor que uno. Se resuelve desarrollando la suma o la recurrencia anterior.
+Al desarrollar la recurrencia llego a T(n) = Θ(n · 2^n). **No puedo aplicar directamente el teorema maestro**, porque la recurrencia no divide el tamaño del problema entre una constante; pasa de n a n - 1. El teorema maestro se utiliza en recurrencias del tipo T(n) = aT(n/b) + f(n), donde el subproblema reduce su tamaño por un factor. En este caso resuelvo la recurrencia desarrollándola, y obtengo el mismo costo que al contar los 2^n subconjuntos y el recorrido de n elementos por cada uno.
 
-El método ingenuo usa espacio auxiliar lineal para la lista de códigos elegidos, aparte de la entrada.
+En cuanto al espacio auxiliar de la solución ingenua, observo que conserva los códigos seleccionados en una lista, por lo que utiliza espacio O(n) en el peor caso, sin contar los datos de entrada.
 
-## 3. Contraejemplo de una estrategia voraz
+## 3. Por qué no elegí una estrategia voraz
 
-No basta con elegir primero el artículo de mayor utilidad ni el de mejor relación utilidad/costo. En el primer caso de prueba:
+Antes de elegir mi solución, comprobé que no podía resolver el problema tomando siempre el artículo con mejor utilidad/costo. Para mostrarlo utilicé el primer caso de prueba del enunciado:
 
 | Útil | Costo (Bs) | Utilidad | Utilidad/costo |
 |---|---:|---:|---:|
@@ -36,29 +36,33 @@ No basta con elegir primero el artículo de mayor utilidad ni el de mejor relaci
 | U2 | 40 | 200 | 5,00 |
 | U3 | 60 | 240 | 4,00 |
 
-Con presupuesto de **100 Bs**, un voraz por relación utilidad/costo escoge U1 y U2: gasta 60 Bs y obtiene 320 puntos. Sin embargo, la combinación U2 y U3 gasta exactamente 100 Bs y obtiene **440 puntos**. Un voraz por utilidad individual también empieza con U3 y luego U1, y solo alcanza 360 puntos. Por tanto, esas decisiones locales no garantizan el óptimo global.
+Con un presupuesto de **100 Bs**, si ordeno por la relación utilidad/costo, primero elijo U1 y después U2. Gasto 60 Bs y consigo 320 puntos. Sin embargo, al comparar esa selección con U2 y U3, veo que esta última combinación cuesta exactamente 100 Bs y consigue **440 puntos**. También probé la regla de elegir primero la mayor utilidad individual: escogería U3 y luego U1, con un total de 360 puntos. Estos resultados me muestran que una decisión local no garantiza la mejor combinación final, por eso descarté el método voraz.
 
-## 4. Estrategia elegida: programación dinámica 0/1
+## 4. Estrategia que elegí: programación dinámica 0/1
 
-Defino \`dp[c]\` como la mayor utilidad alcanzable con una capacidad de c bolivianos, después de procesar los artículos anteriores. Para un útil con costo w y utilidad v, la transición es:
+Elegí **programación dinámica 0/1** porque necesito comparar las combinaciones posibles sin enumerar explícitamente todos los subconjuntos. Defino dp[c] como la mayor utilidad que puedo alcanzar con una capacidad de c bolivianos, después de procesar los artículos anteriores. Para cada útil, con costo w y utilidad v, uso esta transición:
 
 \[
 DP_i[c]=\max(DP_{i-1}[c],\ DP_{i-1}[c-w]+v)
 \]
 
-cuando \(w\le c\); si no cabe, se conserva el valor anterior. En el código comprimo la dimensión de artículos y recorro las capacidades **de mayor a menor**. Así, el artículo actual no se puede volver a utilizar en la misma iteración, respetando la regla 0/1.
+Aplico la segunda alternativa solamente cuando w ≤ c; si el útil no cabe, conservo el valor anterior. En mi código comprimí la dimensión de artículos y recorro las capacidades **de mayor a menor**. Hago ese recorrido descendente para evitar que el mismo artículo se utilice más de una vez en una misma iteración, tal como exige el problema 0/1.
 
-Para reconstruir los códigos elegidos guardo una matriz booleana \`tomar[i,c]\`, que marca cuándo el artículo i mejoró la solución para la capacidad c. Después recorro los artículos en orden inverso y descuento el costo de cada artículo marcado.
+También necesitaba devolver los códigos de los artículos elegidos, no solamente la utilidad. Para conseguirlo guardo una matriz booleana tomar[i,c], donde marco cuándo el artículo i mejora la solución para la capacidad c. Después recorro los artículos en orden inverso y voy descontando el costo de cada artículo que marqué.
 
-Sea \(B' = \min(B,\sum w_i)\), considerando solo útiles de utilidad positiva. El costo temporal es **O(n · B')** y el espacio es **O(n · B')** por la matriz booleana de reconstrucción, más **O(B')** por el arreglo de mejores utilidades. Es una complejidad pseudo-polinomial: depende del valor numérico del presupuesto, no solo de la cantidad de artículos. Para estos tamaños es mucho mejor que enumerar \(2^n\) subconjuntos.
+Para analizar el costo, llamo B' a la capacidad efectiva, que calculo como el menor valor entre el presupuesto y la suma de los costos de los útiles con utilidad positiva. Mi solución realiza **O(n · B')** operaciones en el peor caso. En espacio utiliza **O(n · B')** por la matriz booleana que necesito para reconstruir la selección, más **O(B')** por el arreglo de mejores utilidades. Esta complejidad es pseudo-polinomial porque depende del valor numérico del presupuesto y no solamente de la cantidad de útiles. Aun así, para los tamaños y costos de este ejercicio es mucho más práctica que revisar 2^n subconjuntos.
 
-También agregué una optimización: si el presupuesto alcanza para pagar todos los útiles con utilidad positiva, se devuelven directamente esos útiles en **O(n)**, sin crear la tabla dinámica.
+Además, agregué una salida rápida: si compruebo que el presupuesto alcanza para pagar todos los útiles con utilidad positiva, los selecciono directamente. De esa manera, ese caso se resuelve en **O(n)** y no necesito construir la tabla de programación dinámica.
 
-## 5. Estructura para \`EstaEnLaCompra\`
+## 5. Estructura que utilicé para EstaEnLaCompra
 
-En \`CompradorMejorado\` utilizo \`HashSet<string>\` con comparación ordinal para almacenar los códigos seleccionados. La inserción y la consulta \`Contains\` tienen costo **O(1) promedio**. Por ello \`EstaEnLaCompra(codigo)\` no recorre una lista completa; contrasta con \`List<string>.Contains\` de la solución ingenua, cuyo costo es O(k) para k códigos elegidos.
+Para guardar los códigos elegidos y responder la consulta EstaEnLaCompra(codigo), utilicé un HashSet<string> con comparación ordinal. Elegí esta estructura porque Contains permite consultar si un código está seleccionado en **O(1) promedio**, sin recorrer todos los códigos.
 
-## 6. Los seis casos de prueba
+La solución ingenua utiliza List<string>.Contains, que puede tardar O(k) si tengo que revisar una lista de k códigos. Con mi HashSet, la consulta de pertenencia es más directa y cumple el requisito de O(1) promedio.
+
+## 6. Casos que utilicé para comprobar el resultado
+
+Antes de medir, revisé los seis casos de prueba incluidos en el enunciado. Estos son los resultados esperados que utilicé para comprobar las dos implementaciones:
 
 | Caso | Presupuesto | Utilidad óptima | Códigos esperados |
 |---|---:|---:|---|
@@ -69,10 +73,12 @@ En \`CompradorMejorado\` utilizo \`HashSet<string>\` con comparación ordinal pa
 | Nada cabe | 60 | 0 | ninguno |
 | Entran todos | 200 | 52 | U1, U2, U3 |
 
-El programa prueba estos seis casos con ambas implementaciones y además realiza dos verificaciones de pertenencia (U2 sí está y U1 no está) para cada comprador.
+En el programa ejecuté estos seis casos tanto con CompradorIngenuo como con CompradorMejorado. También añadí dos comprobaciones de pertenencia: después de elegir los útiles del primer caso, compruebo que U2 sí esté en la compra y que U1 no esté. Así reviso tanto la utilidad y los códigos elegidos como el funcionamiento de EstaEnLaCompra.
 
-## 7. ¿Qué ocurre con un presupuesto de 1.000.000.000 Bs?
+## 7. Qué pasaría con un presupuesto de 1.000.000.000 Bs
 
-No se debe crear una tabla con mil millones de columnas. La implementación limita la capacidad efectiva a \(B'=\min(B,\sum w_i)\). Si el presupuesto es al menos la suma de los costos de todos los útiles con utilidad positiva, todos ellos caben y se devuelven directamente en O(n). En el lote generado para 1.000 útiles, cada costo está entre 4 y 49 Bs, así que el costo total no puede superar 49.000 Bs. Con un presupuesto de 1.000.000.000 Bs se comprarían todos los útiles de utilidad positiva y se usaría la salida rápida O(n).
+También analicé qué ocurriría si el presupuesto aumentara a **1.000.000.000 Bs**. En mi implementación no creo una tabla con mil millones de columnas, porque primero calculo la capacidad efectiva B'. Si el presupuesto alcanza para cubrir la suma de los costos de todos los útiles con utilidad positiva, mi programa los selecciona directamente en O(n), sin ejecutar la tabla dinámica.
 
-Si en otro conjunto el costo total superara el presupuesto, la programación dinámica seguiría dependiendo de \(B'\). En ese escenario un presupuesto enorme puede consumir mucha memoria y tiempo; para importes y costos arbitrariamente grandes habría que considerar otra formulación, por ejemplo programación dinámica por utilidad o un algoritmo aproximado, según los límites y la precisión exigida.
+En el lote de 1.000 útiles que genero para las pruebas, cada costo está entre 4 y 49 Bs. Por lo tanto, el costo total no puede superar 49.000 Bs. Con un presupuesto de 1.000.000.000 Bs, todos esos útiles con utilidad positiva cabrían y mi solución utilizaría la salida rápida de O(n).
+
+Si trabajara con otro conjunto donde la suma de costos fuera mayor que el presupuesto, la programación dinámica seguiría dependiendo de B'. En ese caso, un presupuesto muy grande sí podría aumentar bastante el consumo de memoria y el tiempo. Para trabajar con importes mucho mayores tendría que analizar otra alternativa, como programación dinámica por utilidad o un algoritmo aproximado, dependiendo de los límites del problema y de si necesito una respuesta exacta.
