@@ -3,13 +3,9 @@ Xander Boris Pinto Montes
 # Mi análisis — Evaluación integradora, variante B
 
 ## 1. Cómo entendí el problema
-
 Al revisar el caso de las compras de la escuela, identifiqué que se trata del problema clásico de la **mochila 0/1**. Cada útil tiene un costo en bolivianos y un puntaje de utilidad. Para cada artículo solo puedo tomar una decisión: comprarlo completo o dejarlo fuera. Mi objetivo es elegir una combinación que me dé la mayor utilidad posible sin superar el presupuesto.
-
 Como entrada recibo los n útiles, cada uno con sus campos CostoBs y Utilidad, además del presupuesto B. Como resultado debo devolver la utilidad máxima y los códigos de los útiles que seleccioné. También debo respetar que no puedo fraccionar un útil ni comprarlo más de una vez.
-
 ## 2. Análisis del costo de la solución ingenua
-
 Al revisar CompradorIngenuo, observé que recorre las 2^n máscaras posibles, es decir, todos los subconjuntos que se pueden formar con los útiles. Para cada máscara vuelve a recorrer los n artículos y suma sus costos y utilidades. Por eso, el trabajo total es proporcional a:
 
 \[
