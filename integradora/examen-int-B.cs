@@ -14,7 +14,7 @@ public interface IComprador
     bool EstaEnLaCompra(string codigo);
 }
 
-// SOLUCION INGENUA: revisa los 2^n subconjuntos y calcula cada uno.
+// Conservo esta solución ingenua como referencia: revisa los 2^n subconjuntos.
 public sealed class CompradorIngenuo : IComprador
 {
     private List<string> _elegidos = new();
@@ -56,7 +56,7 @@ public sealed class CompradorIngenuo : IComprador
     public bool EstaEnLaCompra(string codigo) => _elegidos.Contains(codigo);
 }
 
-// SOLUCION MEJORADA: programación dinámica 0/1 + HashSet para consulta O(1) promedio.
+// En mi solución mejorada combino programación dinámica 0/1 y HashSet para consultar en O(1) promedio.
 public sealed class CompradorMejorado : IComprador
 {
     private HashSet<string> _enCompra = new(StringComparer.Ordinal);
@@ -72,7 +72,7 @@ public sealed class CompradorMejorado : IComprador
         if (utiles.Length == 0)
             return (0, elegidos);
 
-        // No conviene comprar artículos con utilidad cero o negativa.
+        // Descarto los artículos con utilidad cero o negativa porque no aumentan el resultado.
         long costoTotalUtilesPositivos = 0;
         foreach (var item in utiles)
         {
@@ -82,7 +82,7 @@ public sealed class CompradorMejorado : IComprador
                 costoTotalUtilesPositivos += item.CostoBs;
         }
 
-        // Si todo lo útil cabe, no hace falta construir la tabla de programación dinámica.
+        // Si compruebo que todos los útiles positivos caben, los selecciono sin construir la tabla dinámica.
         if (presupuestoBs >= costoTotalUtilesPositivos)
         {
             int utilidadTotal = 0;
@@ -98,12 +98,12 @@ public sealed class CompradorMejorado : IComprador
             return (utilidadTotal, elegidos);
         }
 
-        // La capacidad efectiva nunca necesita superar la suma de costos disponibles.
+        // Limito la capacidad efectiva para no trabajar con espacio que no voy a necesitar.
         int capacidad = (int)Math.Min((long)presupuestoBs, costoTotalUtilesPositivos);
         int[] mejor = new int[capacidad + 1];
 
-        // tomar[i, c] indica si el artículo i mejoró la solución para capacidad c.
-        // Se usa para reconstruir los artículos sin guardar una tabla int de n x capacidad.
+        // Guardo en tomar[i, c] si el artículo i mejoró la solución para esa capacidad.
+        // Con esta matriz reconstruyo los artículos elegidos sin guardar otra tabla de enteros.
         bool[,] tomar = new bool[utiles.Length, capacidad + 1];
 
         for (int i = 0; i < utiles.Length; i++)
@@ -112,7 +112,7 @@ public sealed class CompradorMejorado : IComprador
             if (item.Utilidad <= 0 || item.CostoBs > capacidad)
                 continue;
 
-            // Recorrer hacia abajo evita reutilizar el mismo artículo más de una vez.
+            // Recorro las capacidades hacia abajo para no reutilizar el mismo artículo.
             for (int c = capacidad; c >= item.CostoBs; c--)
             {
                 int candidato = mejor[c - item.CostoBs] + item.Utilidad;
@@ -138,7 +138,7 @@ public sealed class CompradorMejorado : IComprador
         return (mejor[capacidad], elegidos);
     }
 
-    // HashSet: O(1) promedio, sin recorrer todos los códigos elegidos.
+    // Consulto mi HashSet en O(1) promedio, sin recorrer la lista de códigos elegidos.
     public bool EstaEnLaCompra(string codigo) => _enCompra.Contains(codigo);
 }
 
@@ -192,7 +192,7 @@ public static class Programa
 
     private static ResultadoMedicion Medir(Func<IComprador> fabrica, Util[] utiles, int presupuesto)
     {
-        // Una corrida de calentamiento que no entra en el promedio.
+        // Primero caliento el método; esta corrida no entra en el promedio.
         fabrica().Elegir(utiles, presupuesto);
 
         double sumaMs = 0;
@@ -227,8 +227,8 @@ public static class Programa
 
     private static int[] ElegirTamanos()
     {
-        // La calibración solo escoge un máximo cuyo ingenuo quede entre 0,5 y 20 s.
-        // No se usa como dato de la tabla; cada fila tendrá su calentamiento y 3 mediciones.
+        // Primero calibro el tamaño para que mi solución ingenua quede entre 0,5 y 20 segundos.
+        // No incluyo esta calibración en la tabla: para cada fila hago un calentamiento y tres mediciones.
         Util[] loteCalentamiento = CrearLote(10);
         new CompradorIngenuo().Elegir(loteCalentamiento, PresupuestoDePrueba(loteCalentamiento));
 
